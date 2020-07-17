@@ -18,6 +18,7 @@ Route::get('/userinfo','TestController@userInfo');
 
 Route::post('/user/reg','Reg\RegController@reg');
 Route::post('/user/login','Reg\RegController@login');
+Route::post('/user/center','Reg\RegController@center');
 
 
 
