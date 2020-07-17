@@ -16,9 +16,9 @@ Route::get('/', function () {
 });
 Route::get('/userinfo','TestController@userInfo');
 
-Route::post('/user/reg','Reg\RegController@reg');
-Route::post('/user/login','Reg\RegController@login');
-Route::post('/user/center','Reg\RegController@center');
+Route::post('/user/reg','Reg\RegController@reg'); //注册
+Route::post('/user/login','Reg\RegController@login'); //登录
+Route::get('/user/center','Reg\RegController@center'); //个人中心
 
 
 
