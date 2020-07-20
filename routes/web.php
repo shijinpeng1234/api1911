@@ -15,10 +15,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/userinfo','TestController@userInfo');
+Route::get('/hash1','TestController@hash1');
+Route::get('/hash2','TestController@hash2'); //哈希添加多个
+Route::get('/goods','TestController@Goods'); //商品
+
+
 
 Route::post('/user/reg','Reg\RegController@reg'); //注册
 Route::post('/user/login','Reg\RegController@login'); //登录
 Route::get('/user/center','Reg\RegController@center'); //个人中心
+Route::get('/user/sign','Reg\RegController@sign');//签到
 
 
 
