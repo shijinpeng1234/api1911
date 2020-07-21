@@ -9,7 +9,6 @@ use App\Models\P_users;
 use App\Models\TokenModel;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Redis;
-use Symfony\Component\HttpKernel\DataCollector\RequestDataCollector;
 
 class RegController extends Controller
 {
@@ -137,62 +136,42 @@ class RegController extends Controller
      */
     public function center(Request $request)
     {
-//        验证token是否存在
+
         $token = $request ->get('token');
-        if(empty($token)){
+        $blacktoken = Redis::sismember('blacktoken',$token);
+        if($blacktoken){
             $data = [
-                'errno'  => 400003,
-                'msg'    => '未授权'
+                'errno'=> 50009,
+                'msg'  =>"已放入黑名单"
             ];
             return $data;
-        }
-        //验证token是否有效
-//        $t = TokenModel::where(['token'=>$token])->first();
-        $redis_token = Redis::get('token');
-        if($token==$redis_token){
-            $blacktoken = Redis::sismember('blacktoken',$token);
-            if($blacktoken){
+        }else{
+            //防刷
+            $count_key = 'count';
+            $count =  Redis::get($count_key);
+            if($count>10){
                 $data = [
-                    'errno'=> 50009,
-                    'msg'  =>"已放入黑名单"
+                    'errno' => 50008,
+                    'msg'   => "请求过于频繁"
                 ];
+                Redis::sadd('blacktoken',$token);
+                Redis::expire('blacktoken',600);
+                Redis::expire($count_key,30);
                 return $data;
             }else{
-                //防刷
-                $count_key = 'count';
-                $count =  Redis::get($count_key);
-                if($count>10){
-                    $data = [
-                        'errno' => 50008,
-                        'msg'   => "请求过于频繁"
-                    ];
-                    Redis::sadd('blacktoken',$token);
-                    Redis::expire('blacktoken',600);
-                    Redis::expire($count_key,30);
-                    return $data;
-                }else{
-                    Redis::incr($count_key);
-                    Redis::expire($count_key,30);
-                    $user_id = Redis::get('user_id');
-                    $user_info = P_users::find($user_id);
-                    $data = [
-                        'errno'  => 0,
-                        'msg'    => 'ok',
-                        'data'   => [
-                            'user_info' => $user_info
-                        ]
-                    ];
-                    return $data;
-                }
+                Redis::incr($count_key);
+                Redis::expire($count_key,30);
+                $user_id = Redis::get('user_id');
+                $user_info = P_users::find($user_id);
+                echo "欢迎".$user_info['user_name']."登录";
             }
-        }else{
-            $data = [
-                'errno'  => 400004,
-                'msg'    => 'token无效 '
-            ];
-            return $data;
         }
     }
+
+    /**
+     * @return string
+     * 签到
+     */
     public function sign()
     {
         $key = 'ss:user_sign'.date('ymd');
@@ -208,5 +187,16 @@ class RegController extends Controller
             return '签到成功';
         }
     }
-}
 
+    /**
+     * 测试
+     */
+    public function center2()
+    {
+        $user_id = Redis::get('user_id');
+        $userinfo =P_users::find($user_id);
+        echo "欢迎".$userinfo['user_name']."登录";
+    }
+
+
+}

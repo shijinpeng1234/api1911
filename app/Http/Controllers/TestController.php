@@ -46,7 +46,7 @@ class TestController extends Controller
             echo "有缓存";
         }
         Redis::hincrby($key,'view_count',1);
-        Redis::exprie($key,7200);
+        Redis::expire($key,7200);
     }
 
 }

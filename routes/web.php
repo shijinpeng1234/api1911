@@ -23,8 +23,10 @@ Route::get('/goods','TestController@Goods'); //商品
 
 Route::post('/user/reg','Reg\RegController@reg'); //注册
 Route::post('/user/login','Reg\RegController@login'); //登录
-Route::get('/user/center','Reg\RegController@center'); //个人中心
-Route::get('/user/sign','Reg\RegController@sign');//签到
+Route::get('/user/center','Reg\RegController@center')->middleware('accesstoken'); //个人中心
+Route::get('/user/sign','Reg\RegController@sign')->middleware('viewcount');//签到
+
+Route::get('/user/center2','Reg\RegController@center2')->middleware('accesstoken','viewcount');//测试
 
 
 
