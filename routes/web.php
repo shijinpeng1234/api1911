@@ -28,7 +28,7 @@ Route::get('/user/sign','Reg\RegController@sign')->middleware('viewcount');//签
 
 Route::get('/user/center2','Reg\RegController@center2')->middleware('accesstoken','viewcount');//测试
 
-
-
+Route::post('/dec','TestController@dec');//对称解密
+Route::post('/dec2','TestController@dec2');//非对称解密
 
 

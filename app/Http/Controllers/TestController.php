@@ -49,4 +49,31 @@ class TestController extends Controller
         Redis::expire($key,7200);
     }
 
+    /**
+     * @param Request $request
+     * 解密
+     */
+    public function dec(Request $request)
+    {
+        $method = 'AES-256-CBC';
+        $key = 'api1911';
+        $iv = '1616161616161616';
+        $option = OPENSSL_RAW_DATA;
+
+        echo '<pre>';print_r($_POST);echo '</pre>';
+        $enc_data = base64_decode($_POST['data']);
+
+        //解密数据
+        $dec_data = openssl_decrypt($enc_data,$method,$key,$option,$iv);
+        echo "解密数据：".$dec_data;
+    }
+    public function dec2(Request $request)
+    {
+        $enc_data=$_POST['data'];
+        $priv_key = openssl_get_privatekey(file_get_contents(storage_path('keys/priv.key')));
+        openssl_private_decrypt($enc_data,$dec_data,$priv_key);
+        echo "解密的数据：". $dec_data;
+
+    }
+
 }
