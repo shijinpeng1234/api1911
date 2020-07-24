@@ -31,4 +31,4 @@ Route::get('/user/center2','Reg\RegController@center2')->middleware('accesstoken
 Route::post('/dec','TestController@dec');//对称解密
 Route::post('/dec2','TestController@dec2');//非对称解密
 
-
+Route::get('sign1','TestController@sign1');//验签

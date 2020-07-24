@@ -72,8 +72,50 @@ class TestController extends Controller
         $enc_data=$_POST['data'];
         $priv_key = openssl_get_privatekey(file_get_contents(storage_path('keys/priv.key')));
         openssl_private_decrypt($enc_data,$dec_data,$priv_key);
-        echo "解密的数据：". $dec_data;
+        echo "解密的数据：". $dec_data;echo '</br>';
+
+        //返回
+        $data = "api返回数据";
+        //使用公钥加密
+        $content = file_get_contents(storage_path("keys/www_pub.key"));
+        $pub_key=openssl_get_publickey($content);
+        openssl_public_encrypt($data,$enc_data,$pub_key);
+        echo "加密后".$enc_data.'<br>';
+        //post数据
+        $post_data = [
+            'data'=>$enc_data
+        ];
+        //将加密的文件发送
+        $url = 'http://www.1911.com/dec3';
+        //curl初始
+        $ch = curl_init();
+        //设置参数
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch,CURLOPT_POST,1);
+        curl_setopt($ch,CURLOPT_POSTFIELDS,$post_data);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        //发送请求
+        $response = curl_exec($ch);
+        echo $response;
+        //提示错误
+        $errno =curl_errno($ch);
+        if($errno){
+            $errmsg = curl_error($ch);
+            var_dump($errmsg);
+        }
+        curl_close($ch);
 
     }
-
+    public function sign1(Request $request)
+    {
+        $key = 'api1911';
+        $data = $request->get('data');
+        $sign_str = $request->get('sign');
+        $sign_str2 = sha1($data.$key);
+        if($sign_str!=$sign_str2){
+            echo "验签失败";
+        }else{
+            echo "验签成功";
+        }
+    }
 }
