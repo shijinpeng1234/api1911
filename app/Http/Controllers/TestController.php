@@ -118,4 +118,19 @@ class TestController extends Controller
             echo "验签成功";
         }
     }
+    public function sign2(Request $request)
+    {
+        $data=$_POST['data'];
+        $sign_str = $_POST['sign'];
+        $content2 = file_get_contents(storage_path("keys/www_pub.key"));
+        $prikey2 = openssl_get_publickey($content2);
+        $a = openssl_verify($data,$sign_str,$prikey2,OPENSSL_ALGO_SHA1);
+        echo '<br>'; echo  $a;
+        if($a!=1){
+            echo "验签失败";
+        }else{
+            echo "验签成功";
+        }
+
+    }
 }
